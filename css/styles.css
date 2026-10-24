@@ -152,6 +152,8 @@ mark { background: transparent; color: var(--brand-ink); font-weight: 700; }
 }
 .brand { display: flex; align-items: center; gap: 12px; padding: 4px 6px 20px; min-height: 62px; }
 .brand-logo { flex: none; display: block; }
+.brand-logo-node { transition: transform 500ms var(--ease); }
+.brand:hover .brand-logo-node, .brand-mini:hover .brand-logo-node { transform: translateX(2px); }
 .brand-text { display: flex; flex-direction: column; min-width: 0; transition: opacity 150ms ease; white-space: nowrap; }
 .brand-name { font-family: var(--font-display); font-weight: 800; letter-spacing: .04em; font-size: 15px; text-transform: uppercase; }
 .brand-tag { font-size: 11.5px; color: var(--text-2); }

@@ -1,14 +1,27 @@
 /* =========================================================
-   ENTRELIA — página de entrada: rede, rolagem guiada e ondas
+   ENTRELIA — página de entrada: abertura, rede, rolagem guiada,
+   ondas, parallax e microinterações
    ========================================================= */
 (function () {
   'use strict';
 
-  document.documentElement.classList.add('js');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const hasIntro = document.documentElement.classList.contains('has-intro');
   const SVG_NS = 'http://www.w3.org/2000/svg';
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
   const ease = (t) => 1 - Math.pow(1 - t, 3);
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+
+  /* ---------- Texto dividido ---------- */
+  $$('[data-split]').forEach((el) => {
+    el.innerHTML = [...el.textContent.trim()].map((c, i) => `<span class="ch" style="--i:${i}"><span>${c === ' ' ? '&nbsp;' : c}</span></span>`).join('');
+  });
+  $$('[data-lines]').forEach((el) => {
+    el.innerHTML = el.innerHTML.split(/<br\s*\/?>/i).map((l, i) => `<span class="ln" style="--i:${i}"><span>${l.trim()}</span></span>`).join('');
+  });
 
   /* ---------- Ícones ---------- */
   const ICONS = {
@@ -34,31 +47,37 @@
     { id: 'notas', label: 'Notas' },
   ];
   const CENTER = { x: 500, y: 350 };
-  const ORDERED = {};
+  const ORDERED = { core: CENTER };
   MODULES.forEach((m, i) => {
     const a = -Math.PI / 2 + (i * 2 * Math.PI) / MODULES.length;
     ORDERED[m.id] = { x: CENTER.x + Math.cos(a) * 380, y: CENTER.y + Math.sin(a) * 255 };
   });
-  ORDERED.core = CENTER;
-  // Posições "bagunçadas" do começo da rolagem guiada.
+  // Posições "bagunçadas" do começo da rolagem guiada, com um giro em cada peça.
   const SCATTER = {
-    projetos: { x: 170, y: 560 }, tarefas: { x: 820, y: 110 }, calendario: { x: 300, y: 130 },
-    listas: { x: 900, y: 520 }, custos: { x: 560, y: 610 }, comparador: { x: 90, y: 300 }, notas: { x: 690, y: 330 },
+    projetos: { x: 170, y: 560, r: -14 }, tarefas: { x: 820, y: 110, r: 9 }, calendario: { x: 300, y: 130, r: 12 },
+    listas: { x: 900, y: 520, r: -8 }, custos: { x: 560, y: 610, r: 16 }, comparador: { x: 90, y: 300, r: -10 }, notas: { x: 690, y: 330, r: 7 },
   };
+  const ALL_LINKS = [
+    ['projetos', 'tarefas'], ['projetos', 'custos'], ['projetos', 'listas'], ['projetos', 'notas'],
+    ['tarefas', 'calendario'], ['listas', 'tarefas'], ['comparador', 'custos'],
+    ['calendario', 'core'], ['tarefas', 'core'],
+    ['projetos', 'core'], ['listas', 'core'], ['custos', 'core'], ['comparador', 'core'], ['notas', 'core'],
+  ];
+  const linkKey = (a, b) => `${a}-${b}`;
 
   function curve(a, b) {
     const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
     const cx = mx + (CENTER.x - mx) * 0.35, cy = my + (CENTER.y - my) * 0.35;
     return `M${a.x.toFixed(1)} ${a.y.toFixed(1)}Q${cx.toFixed(1)} ${cy.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
   }
-  const linkKey = (a, b) => `${a}-${b}`;
 
-  function buildNet(svg, links) {
+  function buildNet(svg) {
     const linkLayer = document.createElementNS(SVG_NS, 'g');
+    const sparkLayer = document.createElementNS(SVG_NS, 'g');
     const nodeLayer = document.createElementNS(SVG_NS, 'g');
-    svg.append(linkLayer, nodeLayer);
-    const linkEls = {};
-    links.forEach(([a, b]) => {
+    svg.append(linkLayer, sparkLayer, nodeLayer);
+    const links = {};
+    ALL_LINKS.forEach(([a, b], i) => {
       const p = document.createElementNS(SVG_NS, 'path');
       p.setAttribute('class', 'link');
       p.setAttribute('d', curve(ORDERED[a], ORDERED[b]));
@@ -66,161 +85,288 @@
       p.style.strokeDasharray = '1';
       p.style.strokeDashoffset = '1';
       linkLayer.appendChild(p);
-      linkEls[linkKey(a, b)] = p;
+      const glow = document.createElementNS(SVG_NS, 'circle');
+      glow.setAttribute('class', 'spark-glow');
+      glow.setAttribute('r', '9');
+      const dot = document.createElementNS(SVG_NS, 'circle');
+      dot.setAttribute('class', 'spark');
+      dot.setAttribute('r', '3.2');
+      glow.style.display = dot.style.display = 'none';
+      sparkLayer.append(glow, dot);
+      links[linkKey(a, b)] = { el: p, len: 0, dot, glow, phase: (i * 0.37) % 1, speed: 0.22 + (i % 4) * 0.04, drawn: 0 };
     });
     const core = document.createElementNS(SVG_NS, 'g');
     core.setAttribute('class', 'core');
     core.setAttribute('transform', `translate(${CENTER.x} ${CENTER.y})`);
-    core.innerHTML = `<rect class="core-pulse" x="-50" y="-50" width="100" height="100"/>
-      <rect x="-50" y="-50" width="100" height="100"/>
-      <g fill="none" stroke="#140D08" stroke-width="5" stroke-linecap="square" transform="translate(-36 -36) scale(1.8)">
-        <path d="M12 11v18M12 11h11M12 20h7M12 29h13"/><path d="M24 11l-4 9M20 20l7 9" stroke-width="2.4" stroke-dasharray="1 4"/>
-      </g>
-      <text y="84">Próximo passo</text>`;
+    core.innerHTML = `<g class="node-in"><g class="core-body">
+        <rect class="core-pulse" x="-50" y="-50" width="100" height="100"/>
+        <rect class="core-pulse" x="-50" y="-50" width="100" height="100"/>
+        <rect class="core-box" x="-50" y="-50" width="100" height="100"/>
+        <g transform="translate(-50 -50) scale(2.5)"><path class="core-e" d="M9 9h22v5H14v3.5h7v5h-7V26h17v5H9z"/><rect class="core-node" x="24.5" y="17.5" width="5" height="5"/></g>
+      </g><text y="84">Próximo passo</text></g>`;
     nodeLayer.appendChild(core);
-    const nodeEls = {};
-    MODULES.forEach((m) => {
+    const nodes = {};
+    MODULES.forEach((m, i) => {
       const g = document.createElementNS(SVG_NS, 'g');
       g.setAttribute('class', 'node');
-      g.innerHTML = `<rect x="-36" y="-36" width="72" height="72"/>${glyph(m.id, 30)}<text y="64">${m.label}</text>`;
+      g.innerHTML = `<g class="node-body"><g class="node-in" style="transition-delay:${120 + i * 70}ms"><rect x="-36" y="-36" width="72" height="72"/>${glyph(m.id, 30)}<text y="64">${m.label}</text></g></g>`;
       nodeLayer.appendChild(g);
-      nodeEls[m.id] = g;
+      nodes[m.id] = { el: g, body: g.firstElementChild };
     });
-    return { linkEls, nodeEls, core };
+    return { svg, links, nodes, core };
   }
-  function place(el, pt) { el.style.transform = `translate(${pt.x}px, ${pt.y}px)`; }
+  const place = (n, x, y) => { n.el.style.transform = `translate(${x}px, ${y}px)`; };
 
-  const ALL_LINKS = [
-    ['projetos', 'tarefas'], ['projetos', 'custos'], ['projetos', 'listas'], ['projetos', 'notas'],
-    ['tarefas', 'calendario'], ['listas', 'tarefas'], ['comparador', 'custos'],
-    ['calendario', 'core'], ['tarefas', 'core'],
-    ['projetos', 'core'], ['listas', 'core'], ['custos', 'core'], ['comparador', 'core'], ['notas', 'core'],
-  ];
-
-  /* Hero: a rede já pronta, respirando devagar. */
-  const heroSvg = document.getElementById('hero-net');
-  if (heroSvg) {
-    const net = buildNet(heroSvg, ALL_LINKS);
-    MODULES.forEach((m) => { place(net.nodeEls[m.id], ORDERED[m.id]); net.nodeEls[m.id].classList.add('is-on'); });
-    Object.values(net.linkEls).forEach((p, i) => {
-      p.style.opacity = '.45';
-      setTimeout(() => { p.style.strokeDashoffset = '0'; }, reduceMotion ? 0 : 500 + i * 70);
+  // Faíscas que correm pelas ligações já desenhadas.
+  function runSparks(net, now) {
+    Object.values(net.links).forEach((l) => {
+      const show = l.drawn > 0.98;
+      l.dot.style.display = l.glow.style.display = show ? '' : 'none';
+      if (!show) return;
+      if (!l.len) l.len = l.el.getTotalLength();
+      const t = ((now / 1000) * l.speed + l.phase) % 1;
+      const pt = l.el.getPointAtLength(t * l.len);
+      const fade = Math.sin(t * Math.PI);
+      l.dot.setAttribute('cx', pt.x); l.dot.setAttribute('cy', pt.y);
+      l.glow.setAttribute('cx', pt.x); l.glow.setAttribute('cy', pt.y);
+      l.dot.style.opacity = fade; l.glow.style.opacity = fade * 0.3;
     });
-    net.core.classList.add('is-lit');
   }
+
+  /* ---------- Visibilidade das seções (liga e desliga laços) ---------- */
+  const visible = new Set();
+  const visIO = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id); });
+  }, { rootMargin: '10% 0px' });
+
+  /* ---------- Abertura ---------- */
+  const hero = $('#hero');
+  const heroNet = buildNet($('#hero-net'));
+  MODULES.forEach((m) => { place(heroNet.nodes[m.id], ORDERED[m.id].x, ORDERED[m.id].y); heroNet.nodes[m.id].el.classList.add('is-on'); });
+  heroNet.core.classList.add('is-lit');
+  visIO.observe(hero);
+  setTimeout(() => {
+    hero.classList.add('is-in');
+    heroNet.svg.classList.add('is-in');
+    Object.values(heroNet.links).forEach((l, i) => {
+      l.el.style.opacity = '.42';
+      l.el.style.transition = reduceMotion ? 'none' : `stroke-dashoffset 1.4s cubic-bezier(.23,1,.32,1) ${500 + i * 70}ms`;
+      l.el.style.strokeDashoffset = '0';
+      setTimeout(() => { l.drawn = 1; }, reduceMotion ? 0 : 1900 + i * 70);
+    });
+  }, hasIntro ? 1250 : 80);
 
   /* ---------- Por dentro: rolagem guiada ---------- */
   const STEPS = [
-    { title: 'Tudo solto', text: 'Tarefas num app, gastos em outro, ideias no bloco de notas. Nada conversa com nada.', links: [] },
-    { title: 'Projetos que juntam tudo', text: 'Cada projeto reúne as próprias tarefas, custos, listas e notas. Abriu um, vê o resto.', links: ALL_LINKS.slice(0, 4) },
-    { title: 'Uma coisa depois da outra', text: 'Tarefas podem depender de outras. O que está bloqueado espera a vez, sem roubar sua atenção.', links: ALL_LINKS.slice(0, 7) },
-    { title: 'O dia no lugar', text: '“Organizar meu dia” encaixa as tarefas no tempo livre da agenda e avisa quando dois horários batem.', links: ALL_LINKS.slice(0, 9) },
-    { title: 'Próximo passo claro', text: 'Tudo vira uma sugestão só: o que fazer agora, e por quê.', links: ALL_LINKS },
+    { title: 'Tudo solto', text: 'Tarefas num app, gastos em outro, ideias no bloco de notas. Nada conversa com nada.', upto: 0 },
+    { title: 'Projetos que juntam tudo', text: 'Cada projeto reúne as próprias tarefas, custos, listas e notas. Abriu um, vê o resto.', upto: 4 },
+    { title: 'Uma coisa depois da outra', text: 'Tarefas podem depender de outras. O que está bloqueado espera a vez, sem roubar sua atenção.', upto: 7 },
+    { title: 'O dia no lugar', text: '“Organizar meu dia” encaixa as tarefas no tempo livre da agenda e avisa quando dois horários batem.', upto: 9 },
+    { title: 'Próximo passo claro', text: 'Tudo vira uma sugestão só: o que fazer agora, e por quê.', upto: ALL_LINKS.length },
   ];
-  const inside = document.getElementById('por-dentro');
-  const insideSvg = document.getElementById('inside-net');
-  let insideUpdate = () => {};
-  if (inside && insideSvg) {
-    const net = buildNet(insideSvg, ALL_LINKS);
-    const copy = inside.querySelector('.inside-copy');
-    const titleEl = document.getElementById('inside-title');
-    const textEl = document.getElementById('inside-text');
-    const dots = document.getElementById('inside-steps');
-    dots.innerHTML = STEPS.map((s) => `<li><span class="sr-only">${s.title}</span></li>`).join('');
-    let step = -1, lastT = -1, swapTimer = 0;
+  const inside = $('#por-dentro');
+  const insideNet = buildNet($('#inside-net'));
+  insideNet.svg.classList.add('is-in');
+  visIO.observe(inside);
+  const copy = $('.inside-copy', inside);
+  const titleEl = $('#inside-title');
+  const textEl = $('#inside-text');
+  const numEl = $('#inside-num');
+  const dots = $('#inside-steps');
+  dots.innerHTML = STEPS.map((s, i) => `<li><button type="button" data-step="${i}" aria-label="Etapa ${i + 1}: ${s.title}"></button></li>`).join('');
+  dots.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    const total = inside.offsetHeight - window.innerHeight;
+    window.scrollTo({ top: inside.offsetTop + total * ((Number(b.dataset.step) + 0.55) / STEPS.length), behavior: reduceMotion ? 'auto' : 'smooth' });
+  });
+  const wordsHTML = (t) => t.split(' ').map((w, i) => `<span class="w" style="--i:${i}"><span>${w}</span></span>`).join(' ');
+  let step = -1, swapTimer = 0;
 
-    const render = (s) => {
-      const on = new Set(STEPS[s].links.map(([a, b]) => linkKey(a, b)));
-      const lit = new Set();
-      STEPS[s].links.forEach(([a, b]) => { lit.add(a); lit.add(b); });
-      Object.entries(net.linkEls).forEach(([k, p]) => { p.style.strokeDashoffset = on.has(k) ? '0' : '1'; });
-      MODULES.forEach((m) => net.nodeEls[m.id].classList.toggle('is-on', lit.has(m.id)));
-      net.core.classList.toggle('is-dim', !lit.has('core'));
-      net.core.classList.toggle('is-lit', s === STEPS.length - 1);
-      [...dots.children].forEach((li, i) => li.classList.toggle('is-on', i <= s));
-      clearTimeout(swapTimer);
-      copy.classList.add('is-swapping');
-      swapTimer = setTimeout(() => {
-        titleEl.textContent = STEPS[s].title;
-        textEl.textContent = STEPS[s].text;
-        copy.classList.remove('is-swapping');
-      }, reduceMotion ? 0 : 220);
-    };
-
-    insideUpdate = () => {
-      const r = inside.getBoundingClientRect();
-      const total = inside.offsetHeight - window.innerHeight;
-      const p = clamp(-r.top / total);
-      // As peças se alinham na primeira parte da rolagem.
-      const t = ease(clamp((p - 0.04) / 0.14));
-      if (Math.abs(t - lastT) > 0.001) {
-        lastT = t;
-        MODULES.forEach((m) => {
-          const a = SCATTER[m.id], b = ORDERED[m.id];
-          place(net.nodeEls[m.id], { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
-        });
-      }
-      const s = Math.min(STEPS.length - 1, Math.floor(p * STEPS.length));
-      if (s !== step) { step = s; render(s); }
-    };
-    insideUpdate();
+  function setStep(s) {
+    step = s;
+    const lit = new Set();
+    ALL_LINKS.slice(0, STEPS[s].upto).forEach(([a, b]) => { lit.add(a); lit.add(b); });
+    const before = new Set();
+    if (s > 0) ALL_LINKS.slice(0, STEPS[s - 1].upto).forEach(([a, b]) => { before.add(a); before.add(b); });
+    MODULES.forEach((m) => {
+      insideNet.nodes[m.id].el.classList.toggle('is-on', lit.has(m.id));
+      insideNet.nodes[m.id].el.classList.toggle('is-hot', lit.has(m.id) && !before.has(m.id));
+    });
+    insideNet.core.classList.toggle('is-dim', !lit.has('core'));
+    insideNet.core.classList.toggle('is-lit', s === STEPS.length - 1);
+    $$('button', dots).forEach((b, i) => b.classList.toggle('is-on', i <= s));
+    numEl.textContent = String(s + 1).padStart(2, '0');
+    clearTimeout(swapTimer);
+    copy.classList.add('is-swapping');
+    titleEl.innerHTML = wordsHTML(STEPS[s].title);
+    swapTimer = setTimeout(() => {
+      textEl.textContent = STEPS[s].text;
+      copy.classList.remove('is-swapping');
+    }, reduceMotion ? 0 : 260);
   }
+
+  function updateInside() {
+    const r = inside.getBoundingClientRect();
+    const total = inside.offsetHeight - window.innerHeight;
+    const p = clamp(-r.top / total);
+    const f = p * STEPS.length;
+    // As peças se alinham durante a primeira etapa.
+    const t = ease(clamp((p - 0.03) / 0.15));
+    MODULES.forEach((m) => {
+      const a = SCATTER[m.id], b = ORDERED[m.id], n = insideNet.nodes[m.id];
+      place(n, lerp(a.x, b.x, t), lerp(a.y, b.y, t));
+      n.body.style.transform = `rotate(${(a.r * (1 - t)).toFixed(2)}deg)`;
+    });
+    // Cada ligação se desenha conforme a rolagem avança dentro da sua etapa.
+    let from = 0;
+    STEPS.forEach((st, si) => {
+      const local = ease(clamp((f - si) / 0.55));
+      for (let k = from; k < st.upto; k++) {
+        const l = insideNet.links[linkKey(...ALL_LINKS[k])];
+        const stagger = clamp(local * 1.4 - (k - from) * 0.12);
+        l.drawn = si === 0 ? 0 : stagger;
+        l.el.style.strokeDashoffset = (1 - l.drawn).toFixed(3);
+      }
+      from = st.upto;
+    });
+    inside.style.setProperty('--bgo', (0.55 * (1 - ease(clamp((p - 0.02) / 0.2)))).toFixed(3));
+    inside.style.setProperty('--bgs', (1.04 + p * 0.25).toFixed(3));
+    const s = Math.min(STEPS.length - 1, Math.floor(f));
+    if (s !== step) setStep(s);
+  }
+  updateInside();
 
   /* ---------- Organizar: o caos se acalma ---------- */
-  const calm = document.querySelector('.calm');
-  const calmSvg = document.getElementById('calm-lines');
-  let calmUpdate = () => {};
-  if (calm && calmSvg) {
-    const [pa, pb, pc] = calmSvg.querySelectorAll('path');
-    const W = 1200, N = 120;
-    const noise = (x, t) => Math.sin(x * 0.011 + t) * 0.5 + Math.sin(x * 0.029 + t * 1.3 + 1.7) * 0.32 + Math.sin(x * 0.067 + t * 0.7 + 4.1) * 0.18;
-    const line = (y0, amp, fn) => {
-      let d = '';
-      for (let i = 0; i <= N; i++) {
-        const x = (i / N) * W;
-        d += `${i ? 'L' : 'M'}${x.toFixed(1)} ${(y0 + fn(x) * amp).toFixed(1)}`;
-      }
-      return d;
-    };
-    let p = 0, time = 0, visible = false, raf = 0;
-    const draw = () => {
-      const k = ease(p);
-      pa.setAttribute('d', line(110, 85, (x) => noise(x, time)));
-      pb.setAttribute('d', line(300, 85 * k, (x) => -noise(x, time)));
-      pc.setAttribute('d', line(500, 85 * (1 - k), (x) => noise(x, time)));
-    };
-    const loop = () => {
-      time += 0.012;
-      draw();
-      raf = visible ? requestAnimationFrame(loop) : 0;
-    };
-    calmUpdate = () => {
-      const r = calm.getBoundingClientRect();
-      p = clamp((-r.top + window.innerHeight * 0.2) / (calm.offsetHeight - window.innerHeight * 0.8));
-      visible = r.bottom > 0 && r.top < window.innerHeight;
-      if (reduceMotion) { draw(); return; }
-      if (visible && !raf) raf = requestAnimationFrame(loop);
-    };
-    draw();
-    calmUpdate();
+  const calm = $('#organizar');
+  visIO.observe(calm);
+  const [pa, pb, pc] = $$('#calm-lines path');
+  const calmChars = $$('.calm-title .ch > span');
+  const jitter = calmChars.map((_, i) => ({ x: Math.sin(i * 12.9898) * 0.18, y: Math.cos(i * 78.233) * 0.32, r: Math.sin(i * 4.1) * 16 }));
+  const W = 1200, N = 120;
+  const noise = (x, t) => Math.sin(x * 0.011 + t) * 0.5 + Math.sin(x * 0.029 + t * 1.3 + 1.7) * 0.32 + Math.sin(x * 0.067 + t * 0.7 + 4.1) * 0.18;
+  const line = (y0, amp, sign, t) => {
+    let d = '';
+    for (let i = 0; i <= N; i++) {
+      const x = (i / N) * W;
+      d += `${i ? 'L' : 'M'}${x.toFixed(1)} ${(y0 + sign * noise(x, t) * amp).toFixed(1)}`;
+    }
+    return d;
+  };
+  let calmK = 0, calmTime = 0;
+  function drawCalm() {
+    const k = ease(calmK);
+    pa.setAttribute('d', line(110, 85, 1, calmTime));
+    pb.setAttribute('d', line(300, 85 * k, -1, calmTime));
+    pc.setAttribute('d', line(500, 85 * (1 - k), 1, calmTime));
+    calmChars.forEach((c, i) => {
+      const j = jitter[i], m = 1 - k;
+      c.style.setProperty('--jx', `${(j.x * m).toFixed(3)}em`);
+      c.style.setProperty('--jy', `${(j.y * m).toFixed(3)}em`);
+      c.style.setProperty('--jr', `${(j.r * m).toFixed(2)}deg`);
+    });
+  }
+  function updateCalm() {
+    const r = calm.getBoundingClientRect();
+    calmK = clamp((-r.top + window.innerHeight * 0.15) / (calm.offsetHeight - window.innerHeight * 0.7));
+    if (reduceMotion) drawCalm();
+  }
+  updateCalm();
+  drawCalm();
+
+  /* ---------- Parallax das fotos ---------- */
+  const focus = $('.focus');
+  const focusImg = $('.focus-img img');
+  const numbersImg = $('.numbers-img img');
+  const practicePhoto = $('.practice-photo img');
+  const viewProgress = (el) => {
+    const r = el.getBoundingClientRect();
+    return clamp((window.innerHeight - r.top) / (window.innerHeight + r.height));
+  };
+  function updatePhotos() {
+    if (reduceMotion) return;
+    const f = viewProgress(focus);
+    focusImg.style.setProperty('--fs', (1.18 - 0.16 * f).toFixed(3));
+    focusImg.style.setProperty('--fy', `${((f - 0.5) * -70).toFixed(1)}px`);
+    numbersImg.style.setProperty('--ny', `${(-viewProgress(numbersImg.parentElement) * 16).toFixed(2)}%`);
+    practicePhoto.style.setProperty('--pp', `${(-viewProgress(practicePhoto.parentElement) * 13).toFixed(2)}%`);
   }
 
-  /* ---------- Topo e rolagem ---------- */
-  const top = document.getElementById('top');
-  let ticking = false;
-  const onScroll = () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => {
-      top.classList.toggle('is-scrolled', window.scrollY > 10);
-      insideUpdate();
-      calmUpdate();
-      ticking = false;
+  /* ---------- Abertura: parallax da rolagem e do ponteiro ---------- */
+  const words = $$('.hero-word');
+  const heroVisualSvg = heroNet.svg;
+  const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
+  if (finePointer && !reduceMotion) {
+    window.addEventListener('pointermove', (e) => {
+      pointer.tx = e.clientX / window.innerWidth - 0.5;
+      pointer.ty = e.clientY / window.innerHeight - 0.5;
+    }, { passive: true });
+  }
+  const wide = () => window.innerWidth > 900;
+  function updateHero() {
+    if (reduceMotion || !wide()) return;
+    const h = clamp(window.scrollY / window.innerHeight);
+    words[0].style.setProperty('--py', `${(-h * 140).toFixed(1)}px`);
+    words[1].style.setProperty('--py', `${(h * 90).toFixed(1)}px`);
+    heroVisualSvg.style.setProperty('--hs', (1 + h * 0.3).toFixed(3));
+    heroVisualSvg.style.setProperty('--ho', (1 - h * 1.15).toFixed(3));
+  }
+
+  /* ---------- Topo: progresso, esconder ao descer, seção ativa ---------- */
+  const top = $('#top');
+  const bar = $('#progress');
+  const navLinks = $$('[data-nav]');
+  let lastY = window.scrollY;
+  function updateTop() {
+    const y = window.scrollY;
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.transform = `scaleX(${clamp(y / max).toFixed(4)})`;
+    top.classList.toggle('is-scrolled', y > 10);
+    if (Math.abs(y - lastY) > 6) {
+      top.classList.toggle('is-hidden', y > lastY && y > window.innerHeight * 0.8);
+      lastY = y;
+    }
+    const mid = window.innerHeight * 0.45;
+    let active = '';
+    navLinks.forEach((a) => {
+      const sec = document.getElementById(a.dataset.nav);
+      const r = sec.getBoundingClientRect();
+      if (r.top <= mid && r.bottom > mid) active = a.dataset.nav;
     });
-  };
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll);
-  onScroll();
+    navLinks.forEach((a) => a.classList.toggle('is-active', a.dataset.nav === active));
+  }
+  top.addEventListener('focusin', () => top.classList.remove('is-hidden'));
+
+  /* ---------- Laço principal ---------- */
+  let scrollDirty = true;
+  window.addEventListener('scroll', () => { scrollDirty = true; }, { passive: true });
+  window.addEventListener('resize', () => { scrollDirty = true; });
+  function frame(now) {
+    if (scrollDirty) {
+      scrollDirty = false;
+      updateTop();
+      updateHero();
+      if (visible.has('por-dentro')) updateInside();
+      if (visible.has('organizar')) updateCalm();
+      updatePhotos();
+    }
+    if (!reduceMotion) {
+      if (visible.has('hero')) {
+        runSparks(heroNet, now);
+        if (finePointer && wide()) {
+          pointer.x = lerp(pointer.x, pointer.tx, 0.06);
+          pointer.y = lerp(pointer.y, pointer.ty, 0.06);
+          heroVisualSvg.style.setProperty('--rx', `${(-pointer.y * 10).toFixed(2)}deg`);
+          heroVisualSvg.style.setProperty('--ry', `${(pointer.x * 14).toFixed(2)}deg`);
+          words.forEach((w, i) => w.style.setProperty('--wx', `${(pointer.x * (i ? 18 : -18)).toFixed(1)}px`));
+        }
+      }
+      if (visible.has('por-dentro')) runSparks(insideNet, now);
+      if (visible.has('organizar')) { calmTime += 0.012; drawCalm(); }
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
 
   /* ---------- Vem junto ---------- */
   const BOX = [
@@ -233,37 +379,94 @@
     { icon: 'comparador', name: 'Comparador', desc: 'Compare opções com critérios e pesos e veja qual ganha.' },
     { icon: 'notas', name: 'Notas', desc: 'Ideias e decisões guardadas junto do projeto a que pertencem.' },
   ];
-  const boxList = document.getElementById('box-list');
-  if (boxList) {
-    boxList.innerHTML = BOX.map((b) => `<li class="box-item reveal">
-      <span class="box-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter">${ICONS[b.icon]}</svg></span>
+  const drawable = (svg) => svg.replace(/<(path|rect)\s/g, '<$1 pathLength="1" ');
+  $('#box-list').innerHTML = BOX.map((b, i) => `<li class="box-item reveal" style="transition-delay:${(i % 2) * 90 + Math.floor(i / 2) * 70}ms">
+      <span class="box-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter">${drawable(ICONS[b.icon])}</svg></span>
       <span class="box-name">${b.name}</span><span class="box-tag">Incluso</span>
       <span class="box-desc">${b.desc}</span>
     </li>`).join('');
+  $$('.spec-list > div').forEach((el, i) => { el.style.transitionDelay = `${(i % 2) * 90 + Math.floor(i / 2) * 70}ms`; });
+
+  /* ---------- Na prática: inclinação, próximo passo que avança e valores ---------- */
+  if (finePointer && !reduceMotion) {
+    $$('[data-tilt]').forEach((fig) => {
+      const scr = $('.mock-screen', fig);
+      fig.addEventListener('pointermove', (e) => {
+        const r = scr.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        scr.style.setProperty('--ty', `${((x - 0.5) * 10).toFixed(2)}deg`);
+        scr.style.setProperty('--tx', `${((0.5 - y) * 8).toFixed(2)}deg`);
+        scr.style.setProperty('--gx', `${(x * 100).toFixed(1)}%`);
+        scr.style.setProperty('--gy', `${(y * 100).toFixed(1)}%`);
+      });
+      fig.addEventListener('pointerleave', () => {
+        ['--tx', '--ty'].forEach((v) => scr.style.setProperty(v, '0deg'));
+        scr.style.setProperty('--gx', '100%');
+        scr.style.setProperty('--gy', '0%');
+      });
+    });
+  }
+
+  const NEXT = [
+    { title: 'Reservar hospedagem em Lisboa', why: 'Vence amanhã e precisa ser concluída antes de outras duas.', badges: [['is-warn', 'Vence amanhã'], ['is-danger', 'Alta'], ['', '45 min']] },
+    { title: 'Contratar seguro viagem', why: 'Liberada agora que a hospedagem está reservada.', badges: [['is-warn', 'Vence em 4 dias'], ['', '30 min']] },
+    { title: 'Montar roteiro dia a dia', why: 'Última etapa antes da viagem. Cabe na sua tarde livre.', badges: [['', 'Prazo 5 nov'], ['', '1h 30min']] },
+  ];
+  const mockNext = $('#mock-next');
+  const nextBtn = $('#m-next-btn');
+  let nextI = 0, nextTimer = 0;
+  function cycleNext() {
+    if (!mockNext.closest('.mock').classList.contains('is-in') || document.hidden) { nextTimer = setTimeout(cycleNext, 1200); return; }
+    nextBtn.classList.add('is-pressed');
+    setTimeout(() => { nextBtn.classList.remove('is-pressed'); nextBtn.classList.add('is-done'); }, 180);
+    setTimeout(() => mockNext.classList.add('is-leaving'), 900);
+    setTimeout(() => {
+      nextI = (nextI + 1) % NEXT.length;
+      const n = NEXT[nextI];
+      $('#m-next-title').textContent = n.title;
+      $('#m-next-why').textContent = n.why;
+      $('#m-next-badges').innerHTML = n.badges.map(([c, t]) => `<span class="m-badge ${c}">${t}</span>`).join('');
+      mockNext.classList.remove('is-leaving');
+      mockNext.classList.add('is-entering');
+      nextBtn.classList.remove('is-done');
+      requestAnimationFrame(() => requestAnimationFrame(() => mockNext.classList.remove('is-entering')));
+    }, 1350);
+    nextTimer = setTimeout(cycleNext, 4600);
+  }
+  if (!reduceMotion) nextTimer = setTimeout(cycleNext, 2600);
+
+  const money = (v) => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const tween = (dur, fn) => {
+    if (reduceMotion) { fn(1); return; }
+    const t0 = performance.now();
+    const tick = (now) => { const k = ease(clamp((now - t0) / dur)); fn(k); if (k < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  };
+
+  /* ---------- Chamada final: botão magnético ---------- */
+  const magnet = $('[data-magnet]');
+  if (finePointer && !reduceMotion && magnet) {
+    const zone = magnet.closest('section');
+    zone.addEventListener('pointermove', (e) => {
+      const r = magnet.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+      const near = Math.hypot(dx, dy) < 160;
+      magnet.style.setProperty('--mx', `${near ? (dx * 0.28).toFixed(1) : 0}px`);
+      magnet.style.setProperty('--my', `${near ? (dy * 0.36).toFixed(1) : 0}px`);
+    });
+    zone.addEventListener('pointerleave', () => { magnet.style.setProperty('--mx', '0px'); magnet.style.setProperty('--my', '0px'); });
   }
 
   /* ---------- Revelar e contar ---------- */
-  const countUp = (el) => {
-    const end = Number(el.dataset.count);
-    if (!end || reduceMotion) { el.textContent = String(end); return; }
-    const t0 = performance.now(), dur = 1200;
-    const tick = (now) => {
-      const k = ease(clamp((now - t0) / dur));
-      el.textContent = String(Math.round(end * k));
-      if (k < 1) requestAnimationFrame(tick);
-    };
-    el.textContent = '0';
-    requestAnimationFrame(tick);
-  };
-  const io = 'IntersectionObserver' in window ? new IntersectionObserver((entries) => {
+  const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
       if (!e.isIntersecting) return;
-      e.target.classList.add('is-in');
-      e.target.querySelectorAll('[data-count]').forEach(countUp);
-      io.unobserve(e.target);
+      const el = e.target;
+      el.classList.add('is-in');
+      $$('[data-count]', el).forEach((c) => { const end = Number(c.dataset.count); tween(1300, (k) => { c.textContent = String(Math.round(end * k)); }); });
+      $$('[data-money]', el).forEach((c) => { const end = Number(c.dataset.money); tween(1600, (k) => { c.textContent = money(end * k); }); });
+      io.unobserve(el);
     });
-  }, { threshold: 0.15, rootMargin: '0px 0px -5% 0px' }) : null;
-  document.querySelectorAll('.reveal').forEach((el) => {
-    if (io) io.observe(el); else el.classList.add('is-in');
-  });
+  }, { threshold: 0.15, rootMargin: '0px 0px -6% 0px' });
+  $$('.reveal, [data-lines]').forEach((el) => io.observe(el));
 })();

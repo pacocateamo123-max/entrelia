@@ -85,18 +85,11 @@ function icon(name, cls = '') {
   return `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICONS[name] || ''}</svg>`;
 }
 
-let __logoN = 0;
 function logo(size = 38) {
-  const id = 'lg' + (++__logoN);
   return `<svg class="brand-logo" width="${size}" height="${size}" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
-    <defs><linearGradient id="${id}" x1="6" y1="6" x2="34" y2="34" gradientUnits="userSpaceOnUse"><stop stop-color="#EBEAE6"/><stop offset="1" stop-color="#D6A062"/></linearGradient></defs>
-    <rect x="1" y="1" width="38" height="38" fill="#101011"/>
-    <rect x="1.5" y="1.5" width="37" height="37" fill="none" stroke="#D6A062" stroke-opacity=".45"/>
-    <g fill="none" stroke="url(#${id})" stroke-width="2.6" stroke-linecap="square" stroke-linejoin="miter">
-      <path d="M12 11v18M12 11h11M12 20h7M12 29h13"/>
-      <path d="M24 11l-4 9M20 20l7 9" stroke-width="1.6" stroke-dasharray="1 3"/>
-    </g>
-    <circle cx="24" cy="11" r="2.8" fill="#EBEAE6"/><circle cx="20" cy="20" r="2.8" fill="#A6A39D"/><circle cx="28" cy="29" r="3.6" fill="#D6A062"/>
+    <rect width="40" height="40" fill="#020202"/>
+    <path fill="#EBEAE6" d="M9 9h22v5H14v3.5h7v5h-7V26h17v5H9z"/>
+    <rect class="brand-logo-node" x="24.5" y="17.5" width="5" height="5" fill="#D6A062"/>
   </svg>`;
 }
 

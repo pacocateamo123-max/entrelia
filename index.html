@@ -6,31 +6,68 @@
   <title>ENTRELIA — Tudo conectado. Próximo passo claro.</title>
   <meta name="description" content="ENTRELIA: projetos, tarefas, calendário, listas, custos, comparador e notas conectados, com uma sugestão clara do que fazer agora. Grátis, sem cadastro.">
   <meta name="theme-color" content="#020202">
+  <meta property="og:title" content="ENTRELIA — Tudo conectado. Próximo passo claro.">
+  <meta property="og:description" content="Projetos, tarefas, agenda, listas, custos e notas no mesmo lugar, com o seu próximo passo sempre claro.">
+  <meta property="og:image" content="assets/img/foco-1200.webp">
   <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/landing.css">
+  <script>
+    // Marca a página antes da primeira pintura: animações ligadas e abertura só na primeira visita da sessão.
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      var calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var seen = false;
+      try { seen = sessionStorage.getItem('entrelia-intro') === '1'; sessionStorage.setItem('entrelia-intro', '1'); } catch (e) {}
+      if (!calm && !seen) d.classList.add('has-intro');
+    })();
+  </script>
 </head>
 <body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="mark" viewBox="8 8 24 24">
+      <path fill="currentColor" d="M9 9h22v5H14v3.5h7v5h-7V26h17v5H9z"/>
+      <rect x="24.5" y="17.5" width="5" height="5" fill="#D6A062"/>
+    </symbol>
+    <symbol id="arrow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" d="M5 12h13M13 6l6 6-6 6"/></symbol>
+  </svg>
+
+  <div class="intro" aria-hidden="true">
+    <svg class="intro-mark" viewBox="0 0 40 40">
+      <rect class="im-spine" x="9" y="9" width="5" height="22"/>
+      <rect class="im-top" x="9" y="9" width="22" height="5"/>
+      <rect class="im-mid" x="9" y="17.5" width="12" height="5"/>
+      <rect class="im-bot" x="9" y="26" width="22" height="5"/>
+      <rect class="im-node" x="24.5" y="17.5" width="5" height="5"/>
+    </svg>
+  </div>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
   <a class="skip" href="#conteudo">Pular para o conteúdo</a>
 
   <header class="top" id="top">
-    <a class="wordmark" href="#" aria-label="ENTRELIA, início">ENTRELIA</a>
+    <a class="brand" href="#" aria-label="ENTRELIA, início">
+      <svg class="brand-mark" aria-hidden="true"><use href="#mark"/></svg>
+      <span class="wordmark">ENTRELIA</span>
+    </a>
     <nav class="top-nav" aria-label="Seções">
-      <a href="#por-dentro">Por dentro</a>
-      <a href="#na-pratica">Na prática</a>
-      <a href="#detalhes">Detalhes</a>
+      <a href="#por-dentro" data-nav="por-dentro">Por dentro</a>
+      <a href="#na-pratica" data-nav="na-pratica">Na prática</a>
+      <a href="#detalhes" data-nav="detalhes">Detalhes</a>
     </nav>
-    <a class="btn" href="app.html">Começar</a>
+    <a class="btn" href="app.html"><span>Começar</span><svg class="btn-arrow" aria-hidden="true"><use href="#arrow"/></svg></a>
   </header>
 
   <main id="conteudo">
-    <!-- Hero -->
-    <section class="hero" aria-labelledby="hero-title">
-      <h1 class="hero-title" id="hero-title">
-        <span class="hero-word hero-word-top">Tudo</span>
-        <span class="hero-word hero-word-bottom">conectado</span>
+    <!-- Abertura -->
+    <section class="hero" id="hero" aria-labelledby="hero-title">
+      <h1 class="hero-title" id="hero-title" aria-label="Tudo conectado">
+        <span class="hero-word hero-word-top" data-split aria-hidden="true">Tudo</span>
+        <span class="hero-word hero-word-bottom" data-split aria-hidden="true">conectado</span>
       </h1>
       <div class="hero-visual" aria-hidden="true">
         <svg class="net" id="hero-net" viewBox="0 0 1000 700"></svg>
@@ -41,12 +78,20 @@
         <div><dt>Preço</dt><dd>Grátis</dd></div>
         <div><dt>Seus dados</dt><dd>No navegador</dd></div>
       </dl>
+      <a class="scroll-cue" href="#por-dentro" aria-label="Rolar para Por dentro"><span>Role</span><i aria-hidden="true"></i></a>
     </section>
 
     <!-- Por dentro: rolagem guiada -->
     <section class="inside" id="por-dentro" aria-labelledby="inside-kicker">
       <div class="inside-stage">
-        <p class="kicker" id="inside-kicker">Por dentro do ENTRELIA</p>
+        <picture class="inside-bg" aria-hidden="true">
+          <source media="(max-width: 700px)" srcset="assets/img/caos-640.webp">
+          <img src="assets/img/caos-1100.webp" alt="" width="1100" height="1375" loading="lazy" decoding="async">
+        </picture>
+        <div class="inside-head">
+          <p class="kicker" id="inside-kicker">Por dentro do ENTRELIA</p>
+          <p class="inside-count" aria-hidden="true"><span id="inside-num">01</span><span class="inside-total">/ 05</span></p>
+        </div>
         <div class="inside-copy" aria-live="polite">
           <h2 class="inside-title" id="inside-title">Tudo solto</h2>
           <p class="inside-text" id="inside-text">Tarefas num app, gastos em outro, ideias no bloco de notas. Nada conversa com nada.</p>
@@ -57,48 +102,78 @@
     </section>
 
     <!-- Organizar: as ondas se acalmam -->
-    <section class="calm" aria-labelledby="calm-title">
+    <section class="calm" id="organizar" aria-labelledby="calm-title">
       <div class="calm-stage">
         <svg class="calm-lines" id="calm-lines" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
           <path class="calm-a" d=""/>
           <path class="calm-b" d=""/>
           <path class="calm-c" d=""/>
         </svg>
-        <h2 class="calm-title" id="calm-title">Organizar</h2>
+        <h2 class="calm-title" id="calm-title" aria-label="Organizar"><span data-split aria-hidden="true">Organizar</span></h2>
         <p class="calm-text">O ENTRELIA lê prazos, prioridades e dependências e encontra a ordem certa. Role e veja a bagunça virar uma fila.</p>
+        <ul class="calm-legend" aria-hidden="true">
+          <li><i class="lg-a"></i>Suas pendências</li>
+          <li><i class="lg-b"></i>ENTRELIA</li>
+          <li><i class="lg-c"></i>O que sobra</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Foco: foto em tela cheia -->
+    <section class="focus" aria-labelledby="focus-title">
+      <picture class="focus-img">
+        <source media="(max-width: 900px)" srcset="assets/img/foco-1200.webp">
+        <img src="assets/img/foco-2400.webp" alt="Pessoa escrevendo num caderno à noite, sob a luz de uma luminária de cobre." width="2400" height="1357" loading="lazy" decoding="async">
+      </picture>
+      <div class="focus-copy">
+        <h2 class="display" id="focus-title" data-lines>Sobra<br>o foco</h2>
+        <p class="reveal">Sem trinta abas abertas na cabeça. Só a próxima tarefa, na hora certa, com o motivo ao lado.</p>
       </div>
     </section>
 
     <!-- Na prática -->
     <section class="practice section" id="na-pratica" aria-labelledby="practice-title">
-      <h2 class="display reveal" id="practice-title">Na<br>prática</h2>
+      <div class="practice-side">
+        <h2 class="display" id="practice-title" data-lines>Na<br>prática</h2>
+        <figure class="practice-photo reveal">
+          <div class="practice-photo-frame">
+            <picture>
+              <source media="(max-width: 700px)" srcset="assets/img/planner-640.webp">
+              <img src="assets/img/planner-1100.webp" alt="Caderno com uma lista de tarefas, três itens marcados, e uma caneta de cobre." width="1100" height="1375" loading="lazy" decoding="async">
+            </picture>
+          </div>
+        </figure>
+      </div>
       <div class="practice-grid">
-        <figure class="mock reveal">
-          <div class="mock-screen">
+        <figure class="mock reveal" data-tilt>
+          <div class="mock-screen mock-next" id="mock-next">
             <p class="m-eyebrow">Seu próximo passo</p>
-            <p class="m-title">Reservar hospedagem em Lisboa</p>
-            <p class="m-why">Vence amanhã e precisa ser concluída antes de outras duas.</p>
-            <div class="m-badges"><span class="m-badge is-warn">Vence amanhã</span><span class="m-badge is-danger">Alta</span><span class="m-badge">45 min</span></div>
-            <span class="m-btn">Concluir</span>
+            <div class="m-swap">
+              <p class="m-title" id="m-next-title">Reservar hospedagem em Lisboa</p>
+              <p class="m-why" id="m-next-why">Vence amanhã e precisa ser concluída antes de outras duas.</p>
+              <div class="m-badges" id="m-next-badges"><span class="m-badge is-warn">Vence amanhã</span><span class="m-badge is-danger">Alta</span><span class="m-badge">45 min</span></div>
+            </div>
+            <span class="m-btn" id="m-next-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17 19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"/></svg>Concluir</span>
           </div>
           <figcaption><strong>Próximo passo</strong><span>A tarefa certa, com o motivo</span></figcaption>
         </figure>
-        <figure class="mock reveal">
+        <figure class="mock reveal" data-tilt>
           <div class="mock-screen">
             <p class="m-eyebrow">Agenda de hoje</p>
             <ul class="m-agenda">
               <li><time>10:00</time><span>Reunião de alinhamento</span></li>
               <li><time>12:30</time><span>Almoço com a Ana</span></li>
-              <li class="is-clash"><time>15:00</time><span>Aula de inglês</span><em>Conflito</em></li>
-              <li class="is-clash"><time>15:30</time><span>Ligação com a agência</span><em>Conflito</em></li>
+              <li class="is-clash"><time>15:00</time><span>Aula de inglês</span><em>Conflito de horário</em></li>
+              <li class="is-clash"><time>15:30</time><span>Ligação com a agência</span><em>Conflito de horário</em></li>
             </ul>
+            <span class="m-now" aria-hidden="true"></span>
           </div>
           <figcaption><strong>Agenda</strong><span>Conflitos de horário avisados na hora</span></figcaption>
         </figure>
-        <figure class="mock reveal">
+        <figure class="mock reveal" data-tilt>
           <div class="mock-screen">
             <p class="m-eyebrow">Custos de outubro</p>
-            <p class="m-money">R$ 6.214,70</p>
+            <p class="m-money">R$ <span data-money="6214.70">0,00</span></p>
             <div class="m-bars" aria-hidden="true">
               <span style="--h:42%"></span><span style="--h:64%"></span><span style="--h:38%"></span><span style="--h:80%"></span><span style="--h:55%"></span><span class="is-now" style="--h:92%"></span>
             </div>
@@ -109,30 +184,36 @@
       </div>
     </section>
 
-    <!-- Números -->
-    <section class="numbers section" aria-label="Em números">
-      <div class="num-hero reveal">
-        <p class="num-giant"><span class="num-unit">R$</span>&nbsp;<span data-count="0">0</span></p>
-        <p class="num-side">Grátis, sem cadastro e sem anúncio. É abrir e começar.</p>
-      </div>
-      <div class="num-row">
-        <p class="num reveal"><span class="num-big" data-count="7">7</span><span class="num-label">ferramentas que conversam entre si</span></p>
-        <p class="num reveal"><span class="num-big"><span data-count="100">100</span>%</span><span class="num-label">dos dados no seu navegador</span></p>
+    <!-- Números, sobre a foto -->
+    <section class="numbers" aria-label="Em números">
+      <picture class="numbers-img">
+        <source media="(max-width: 900px)" srcset="assets/img/janela-1200.webp">
+        <img src="assets/img/janela-2400.webp" alt="Pessoa descansando perto da janela ao entardecer, com o celular na mão." width="2400" height="1357" loading="lazy" decoding="async">
+      </picture>
+      <div class="numbers-body">
+        <div class="num-hero">
+          <p class="num-giant reveal"><span class="num-unit">R$</span>&nbsp;0</p>
+          <p class="num-side reveal">Grátis, sem cadastro e sem anúncio. É abrir e começar.</p>
+        </div>
+        <div class="num-row">
+          <p class="num reveal"><span class="num-big" data-count="7">7</span><span class="num-label">ferramentas que conversam entre si</span></p>
+          <p class="num reveal"><span class="num-big"><span data-count="100">100</span>%</span><span class="num-label">dos dados no seu navegador</span></p>
+        </div>
       </div>
     </section>
 
     <!-- O que vem junto -->
     <section class="box section" aria-labelledby="box-title">
       <div class="box-head">
-        <h2 class="display reveal" id="box-title">Vem junto</h2>
-        <p class="box-count">8 telas</p>
+        <h2 class="display" id="box-title" data-lines>Vem junto</h2>
+        <p class="box-count reveal">8 telas</p>
       </div>
       <ul class="box-list" id="box-list"></ul>
     </section>
 
     <!-- Detalhes -->
     <section class="specs section" id="detalhes" aria-labelledby="specs-title">
-      <h2 class="display reveal" id="specs-title">Detalhes</h2>
+      <h2 class="display" id="specs-title" data-lines>Detalhes</h2>
       <dl class="spec-list">
         <div class="reveal"><dt>Funciona em</dt><dd>Chrome, Edge, Firefox e Safari, no computador e no celular</dd></div>
         <div class="reveal"><dt>Instalação</dt><dd>Nenhuma. Abre direto no navegador</dd></div>
@@ -147,16 +228,19 @@
 
     <!-- Chamada final -->
     <section class="cta" aria-labelledby="cta-title">
-      <h2 class="cta-title reveal" id="cta-title">Próximo passo<br>claro</h2>
-      <a class="btn btn-lg reveal" href="app.html">Abrir o ENTRELIA</a>
+      <h2 class="cta-title" id="cta-title" data-lines>Próximo passo<br>claro</h2>
+      <a class="btn btn-lg reveal" href="app.html" data-magnet><span>Abrir o ENTRELIA</span><svg class="btn-arrow" aria-hidden="true"><use href="#arrow"/></svg></a>
       <p class="cta-note reveal">Comece com dados de demonstração ou do zero.</p>
     </section>
   </main>
 
   <footer class="foot">
-    <span class="wordmark">ENTRELIA</span>
-    <span>Tudo conectado. Próximo passo claro.</span>
-    <a href="app.html">Abrir o app</a>
+    <p class="foot-giant" aria-hidden="true">ENTRELIA</p>
+    <div class="foot-row">
+      <a class="brand" href="#" aria-label="Voltar ao início"><svg class="brand-mark" aria-hidden="true"><use href="#mark"/></svg><span class="wordmark">ENTRELIA</span></a>
+      <span>Tudo conectado. Próximo passo claro.</span>
+      <a href="app.html">Abrir o app</a>
+    </div>
   </footer>
 
   <script src="js/landing.js"></script>

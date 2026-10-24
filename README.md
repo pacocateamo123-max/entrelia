@@ -19,7 +19,9 @@ No primeiro acesso, escolha entre explorar os **dados de demonstração** ou **c
 
 ## Estrutura
 
-- `index.html`, `css/landing.css`, `js/landing.js`: página de apresentação, com rolagem guiada e animações
+- `index.html`, `css/landing.css`, `js/landing.js`: página de apresentação, com abertura animada, rolagem guiada, parallax e microinterações
+- `assets/img/`: fotos da página de apresentação (WebP, em dois tamanhos)
+- `assets/logo.svg`: o símbolo (um "E" com o quadrado de cobre do próximo passo)
 - `app.html`: o app (página única)
 - `css/styles.css`: tema escuro e claro do app, layout responsivo e animações
 - `js/util.js`: datas, moeda (R$) e textos em pt-BR
