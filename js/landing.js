@@ -255,12 +255,15 @@
   };
   let calmK = 0, calmTime = 0;
   function drawCalm() {
-    const k = ease(calmK);
-    pa.setAttribute('d', line(110, 85, 1, calmTime));
-    pb.setAttribute('d', line(300, 85 * k, -1, calmTime));
-    pc.setAttribute('d', line(500, 85 * (1 - k), 1, calmTime));
+    // As três linhas e as letras se endireitam juntas e ficam retas no fim da rolagem.
+    const k = ease(clamp(calmK / 0.8));
+    const m = 1 - k;
+    pa.setAttribute('d', line(110, 85 * m, 1, calmTime));
+    pb.setAttribute('d', line(300, 85 * m, -1, calmTime + 2.1));
+    pc.setAttribute('d', line(500, 85 * m, 1, calmTime + 4.3));
+    calm.classList.toggle('is-calm', k > 0.995);
     calmChars.forEach((c, i) => {
-      const j = jitter[i], m = 1 - k;
+      const j = jitter[i];
       c.style.setProperty('--jx', `${(j.x * m).toFixed(3)}em`);
       c.style.setProperty('--jy', `${(j.y * m).toFixed(3)}em`);
       c.style.setProperty('--jr', `${(j.r * m).toFixed(2)}deg`);

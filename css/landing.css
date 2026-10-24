@@ -342,6 +342,8 @@ img { display: block; max-width: 100%; }
 .calm-a { stroke: rgba(235, 234, 230, .55); stroke-width: 1.6; }
 .calm-b { stroke: var(--accent); stroke-width: 2; }
 .calm-c { stroke: var(--ink); stroke-width: 3; }
+.calm-lines path { transition: stroke .6s var(--ease-out); }
+.calm.is-calm .calm-a, .calm.is-calm .calm-c { stroke: var(--accent); }
 .calm-title {
   position: relative;
   font-family: var(--font-display);
@@ -354,13 +356,6 @@ img { display: block; max-width: 100%; }
 .calm-title .ch { overflow: visible; }
 .calm-title .ch > span { transform: translate(var(--jx, 0), var(--jy, 0)) rotate(var(--jr, 0deg)); transition: none; }
 .calm-text { position: absolute; left: var(--margin); bottom: 2.5rem; max-width: 34ch; }
-.calm-legend { position: absolute; right: var(--margin); bottom: 2.6rem; display: flex; flex-direction: column; gap: .5rem; font-size: var(--step-small); color: var(--muted); }
-.calm-legend li { display: flex; align-items: center; gap: .7rem; }
-.calm-legend i { width: 22px; height: 0; border-top: 2px solid; }
-.calm-legend .lg-a { border-color: rgba(235, 234, 230, .55); border-top-width: 1.5px; }
-.calm-legend .lg-b { border-color: var(--accent); }
-.calm-legend .lg-c { border-color: var(--ink); border-top-width: 3px; }
-@media (max-width: 700px) { .calm-legend { display: none; } }
 
 /* ---------- Foco: foto em tela cheia ---------- */
 .focus { position: relative; height: 120vh; overflow: hidden; display: flex; align-items: flex-end; }
