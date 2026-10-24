@@ -6,10 +6,22 @@
   <title>ENTRELIA — Tudo conectado. Próximo passo claro.</title>
   <meta name="description" content="ENTRELIA: projetos, tarefas, calendário, listas, custos, comparador e notas conectados, com uma sugestão clara do que fazer agora. Grátis, sem cadastro.">
   <meta name="theme-color" content="#020202">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pacocateamo123-max.github.io/entrelia/">
+  <meta property="og:site_name" content="ENTRELIA">
+  <meta property="og:locale" content="pt_BR">
   <meta property="og:title" content="ENTRELIA — Tudo conectado. Próximo passo claro.">
   <meta property="og:description" content="Projetos, tarefas, agenda, listas, custos e notas no mesmo lugar, com o seu próximo passo sempre claro.">
-  <meta property="og:image" content="assets/img/foco-1200.webp">
+  <meta property="og:image" content="https://pacocateamo123-max.github.io/entrelia/assets/og.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="ENTRELIA — Tudo conectado. Próximo passo claro.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://pacocateamo123-max.github.io/entrelia/">
   <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
@@ -57,6 +69,7 @@
     <nav class="top-nav" aria-label="Seções">
       <a href="#por-dentro" data-nav="por-dentro">Por dentro</a>
       <a href="#na-pratica" data-nav="na-pratica">Na prática</a>
+      <a href="#telas" data-nav="telas">Telas</a>
       <a href="#detalhes" data-nav="detalhes">Detalhes</a>
     </nav>
     <a class="btn" href="app.html"><span>Começar</span><svg class="btn-arrow" aria-hidden="true"><use href="#arrow"/></svg></a>
@@ -184,6 +197,31 @@
       </div>
     </section>
 
+    <!-- As telas de verdade -->
+    <section class="screens section" id="telas" aria-labelledby="screens-title">
+      <div class="screens-head">
+        <h2 class="display" id="screens-title" data-lines>As telas<br>de verdade</h2>
+        <p class="screens-lead reveal">Sem maquete: é o app do jeito que abre no seu navegador, com os dados de demonstração.</p>
+      </div>
+      <div class="screens-tabs reveal" role="tablist" aria-label="Telas do app">
+        <button type="button" role="tab" aria-selected="true" aria-controls="screen-view" data-shot="0"><span>Visão geral</span><i aria-hidden="true"></i></button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="screen-view" data-shot="1" tabindex="-1"><span>Tarefas</span><i aria-hidden="true"></i></button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="screen-view" data-shot="2" tabindex="-1"><span>Calendário</span><i aria-hidden="true"></i></button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="screen-view" data-shot="3" tabindex="-1"><span>Custos</span><i aria-hidden="true"></i></button>
+      </div>
+      <div class="screens-stage">
+        <figure class="screens-frame" id="screen-view" role="tabpanel">
+          <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i><span>entrelia</span></div>
+          <div class="frame-shots">
+            <picture class="is-on"><source media="(max-width: 800px)" srcset="assets/img/app-visao-geral-960.webp"><img src="assets/img/app-visao-geral-1600.webp" alt="Visão geral do ENTRELIA: o próximo passo em destaque, a agenda de hoje e os números do dia." width="1600" height="1000" loading="lazy" decoding="async"></picture>
+            <picture><source media="(max-width: 800px)" srcset="assets/img/app-tarefas-960.webp"><img src="assets/img/app-tarefas-1600.webp" alt="Tarefas em quadro: a fazer, em andamento e concluído." width="1600" height="1000" loading="lazy" decoding="async"></picture>
+            <picture><source media="(max-width: 800px)" srcset="assets/img/app-calendario-960.webp"><img src="assets/img/app-calendario-1600.webp" alt="Calendário do mês com compromissos e prazos de tarefas." width="1600" height="1000" loading="lazy" decoding="async"></picture>
+            <picture><source media="(max-width: 800px)" srcset="assets/img/app-custos-960.webp"><img src="assets/img/app-custos-1600.webp" alt="Custos do mês: orçamento, total pago e saldo disponível." width="1600" height="1000" loading="lazy" decoding="async"></picture>
+          </div>
+        </figure>
+      </div>
+    </section>
+
     <!-- Números, sobre a foto -->
     <section class="numbers" aria-label="Em números">
       <picture class="numbers-img">
@@ -216,7 +254,7 @@
       <h2 class="display" id="specs-title" data-lines>Detalhes</h2>
       <dl class="spec-list">
         <div class="reveal"><dt>Funciona em</dt><dd>Chrome, Edge, Firefox e Safari, no computador e no celular</dd></div>
-        <div class="reveal"><dt>Instalação</dt><dd>Nenhuma. Abre direto no navegador</dd></div>
+        <div class="reveal"><dt>Instalação</dt><dd>Nenhuma. Se quiser, adicione à tela inicial e use até sem internet</dd></div>
         <div class="reveal"><dt>Seus dados</dt><dd>Salvos só neste navegador. Nada vai para um servidor</dd></div>
         <div class="reveal"><dt>Backup</dt><dd>Exportar e importar em arquivo JSON</dd></div>
         <div class="reveal"><dt>Atalhos</dt><dd>Ctrl/⌘ + K para buscar, N para nova tarefa, Esc para fechar</dd></div>
@@ -244,5 +282,8 @@
   </footer>
 
   <script src="js/landing.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  </script>
 </body>
 </html>

@@ -457,6 +457,51 @@
     zone.addEventListener('pointerleave', () => { magnet.style.setProperty('--mx', '0px'); magnet.style.setProperty('--my', '0px'); });
   }
 
+  /* ---------- As telas de verdade: abas que avançam sozinhas e moldura que se endireita ---------- */
+  const screens = $('#telas');
+  const tabs = $$('.screens-tabs [role="tab"]');
+  const tabList = $('.screens-tabs');
+  const shots = $$('.frame-shots picture');
+  const screenFrame = $('.screens-frame');
+  const selectShot = (i, focus) => {
+    tabs.forEach((t, k) => {
+      const on = k === i;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      // Reinicia a barrinha de progresso da aba ativa.
+      const bar = $('i', t); bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = '';
+    });
+    shots.forEach((p, k) => p.classList.toggle('is-on', k === i));
+    $$('img', shots[i]).forEach((img) => { img.loading = 'eager'; });
+    if (focus) tabs[i].focus();
+  };
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => selectShot(i));
+    $('i', t).addEventListener('animationend', () => selectShot((i + 1) % tabs.length));
+  });
+  tabList.addEventListener('keydown', (e) => {
+    const cur = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
+    if (e.key === 'ArrowRight') { e.preventDefault(); selectShot((cur + 1) % tabs.length, true); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); selectShot((cur + tabs.length - 1) % tabs.length, true); }
+  });
+  const pauseTabs = (on) => tabList.classList.toggle('is-paused', on || reduceMotion);
+  [screenFrame, tabList].forEach((el) => {
+    el.addEventListener('pointerenter', () => pauseTabs(true));
+    el.addEventListener('pointerleave', () => pauseTabs(false));
+  });
+  tabList.classList.add('is-paused');
+  new IntersectionObserver((entries) => entries.forEach((e) => pauseTabs(!e.isIntersecting)), { threshold: 0.35 }).observe(screenFrame);
+  // Carrega as outras telas sem pressa, depois que a página abriu.
+  window.addEventListener('load', () => setTimeout(() => $$('.frame-shots img').forEach((img) => { img.loading = 'eager'; }), 1500));
+  function updateScreens() {
+    if (reduceMotion) return;
+    const k = ease(clamp(viewProgress(screens) * 2.4 - 0.2));
+    screenFrame.style.setProperty('--sx', `${(24 * (1 - k)).toFixed(2)}deg`);
+    screenFrame.style.setProperty('--ss', (0.92 + 0.08 * k).toFixed(3));
+  }
+  updateScreens();
+  window.addEventListener('scroll', updateScreens, { passive: true });
+
   /* ---------- Revelar e contar ---------- */
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => {

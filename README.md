@@ -23,6 +23,8 @@ No primeiro acesso, escolha entre explorar os **dados de demonstração** ou **c
 - `assets/img/`: fotos da página de apresentação (WebP, em dois tamanhos)
 - `assets/logo.svg`: o símbolo (um "E" com o quadrado de cobre do próximo passo)
 - `app.html`: o app (página única)
+- `manifest.webmanifest`, `sw.js`, `assets/icons/`: instalar na tela inicial e abrir sem internet (ao mudar a lista de arquivos do app, atualize `SHELL` e a versão `CACHE` em `sw.js`)
+- `assets/og.jpg`: imagem da prévia ao compartilhar o link
 - `css/styles.css`: tema escuro e claro do app, layout responsivo e animações
 - `js/util.js`: datas, moeda (R$) e textos em pt-BR
 - `js/ui.js`: ícones, logotipo, modais, avisos, menus e atualização do DOM
