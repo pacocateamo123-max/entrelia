@@ -22,8 +22,8 @@ const LIST_TYPES = {
   personalizada: { label: 'Lista personalizada', short: 'Personalizada', icon: 'list' },
 };
 const CATEGORIES = ['Alimentação', 'Transporte', 'Hospedagem', 'Educação', 'Moradia', 'Saúde', 'Lazer', 'Compras', 'Serviços', 'Tecnologia', 'Documentos', 'Outros'];
-const CATEGORY_COLORS = ['#A78BFA', '#5EEAD4', '#FBBF24', '#FDA4AF', '#60A5FA', '#F472B6', '#34D399', '#FB923C', '#C084FC', '#38BDF8', '#FACC15', '#94A3B8'];
-const PROJECT_COLORS = ['#A78BFA', '#5EEAD4', '#FBBF24', '#FDA4AF', '#60A5FA', '#F472B6', '#34D399', '#FB923C'];
+const CATEGORY_COLORS = ['#D6A062', '#5EEAD4', '#FBBF24', '#FDA4AF', '#60A5FA', '#F472B6', '#34D399', '#FB923C', '#C084FC', '#38BDF8', '#FACC15', '#94A3B8'];
+const PROJECT_COLORS = ['#D6A062', '#5EEAD4', '#FBBF24', '#FDA4AF', '#60A5FA', '#F472B6', '#34D399', '#FB923C'];
 const categoryColor = (c) => CATEGORY_COLORS[Math.max(0, CATEGORIES.indexOf(c)) % CATEGORY_COLORS.length];
 
 /* ---------- Modelos (valores padrão) ---------- */

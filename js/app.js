@@ -138,7 +138,7 @@ const App = {
   applyTheme() {
     const dark = App.resolveDark(DB.getMeta().theme);
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-    document.querySelector('meta[name="theme-color"]').setAttribute('content', dark ? '#090D16' : '#F2F4F8');
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', dark ? '#020202' : '#EBEAE6');
     try { localStorage.setItem('entrelia-theme', DB.getMeta().theme); } catch (e) { /* sem acesso */ }
   },
   setTheme(pref) {

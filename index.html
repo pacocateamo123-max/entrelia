@@ -1,63 +1,164 @@
 <!doctype html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>ENTRELIA — Tudo conectado. Próximo passo claro.</title>
-  <meta name="description" content="ENTRELIA: central inteligente de organização pessoal e de projetos. Tarefas, calendário, listas, custos, comparador e notas conectados.">
-  <meta name="theme-color" content="#090D16">
+  <meta name="description" content="ENTRELIA: projetos, tarefas, calendário, listas, custos, comparador e notas conectados, com uma sugestão clara do que fazer agora. Grátis, sem cadastro.">
+  <meta name="theme-color" content="#020202">
   <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
-  <script>
-    // Aplica o tema salvo antes da primeira pintura (evita piscar).
-    (function () {
-      var pref = 'escuro';
-      try { pref = localStorage.getItem('entrelia-theme') || 'escuro'; } catch (e) {}
-      var dark = pref === 'sistema' ? !window.matchMedia('(prefers-color-scheme: light)').matches : pref !== 'claro';
-      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-    })();
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/landing.css">
 </head>
 <body>
-  <a class="skip-link" href="#main">Pular para o conteúdo</a>
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
 
-  <div class="app" id="app">
-    <aside class="sidebar" id="sidebar" aria-label="Menu principal"></aside>
-    <div class="main-col">
-      <header class="topbar" id="topbar"></header>
-      <main id="main" tabindex="-1">
-        <div class="boot" role="status">
-          <div class="boot-dot"></div>
-          <span>Carregando seus dados…</span>
+  <header class="top" id="top">
+    <a class="wordmark" href="#" aria-label="ENTRELIA, início">ENTRELIA</a>
+    <nav class="top-nav" aria-label="Seções">
+      <a href="#por-dentro">Por dentro</a>
+      <a href="#na-pratica">Na prática</a>
+      <a href="#detalhes">Detalhes</a>
+    </nav>
+    <a class="btn" href="app.html">Começar</a>
+  </header>
+
+  <main id="conteudo">
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 class="hero-title" id="hero-title">
+        <span class="hero-word hero-word-top">Tudo</span>
+        <span class="hero-word hero-word-bottom">conectado</span>
+      </h1>
+      <div class="hero-visual" aria-hidden="true">
+        <svg class="net" id="hero-net" viewBox="0 0 1000 700"></svg>
+      </div>
+      <p class="hero-lead">ENTRELIA junta projetos, tarefas, agenda, listas, custos e notas no mesmo lugar e diz qual é o seu próximo passo.</p>
+      <dl class="hero-specs">
+        <div><dt>Instalação</dt><dd>Nenhuma</dd></div>
+        <div><dt>Preço</dt><dd>Grátis</dd></div>
+        <div><dt>Seus dados</dt><dd>No navegador</dd></div>
+      </dl>
+    </section>
+
+    <!-- Por dentro: rolagem guiada -->
+    <section class="inside" id="por-dentro" aria-labelledby="inside-kicker">
+      <div class="inside-stage">
+        <p class="kicker" id="inside-kicker">Por dentro do ENTRELIA</p>
+        <div class="inside-copy" aria-live="polite">
+          <h2 class="inside-title" id="inside-title">Tudo solto</h2>
+          <p class="inside-text" id="inside-text">Tarefas num app, gastos em outro, ideias no bloco de notas. Nada conversa com nada.</p>
         </div>
-      </main>
-    </div>
-    <nav class="bottom-nav" id="bottom-nav" aria-label="Navegação principal"></nav>
-  </div>
+        <svg class="net net-inside" id="inside-net" viewBox="0 0 1000 700" aria-hidden="true"></svg>
+        <ol class="inside-steps" id="inside-steps" aria-label="Etapas"></ol>
+      </div>
+    </section>
 
-  <div id="modal-root"></div>
-  <div id="toast-root" class="toasts" aria-live="polite"></div>
+    <!-- Organizar: as ondas se acalmam -->
+    <section class="calm" aria-labelledby="calm-title">
+      <div class="calm-stage">
+        <svg class="calm-lines" id="calm-lines" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
+          <path class="calm-a" d=""/>
+          <path class="calm-b" d=""/>
+          <path class="calm-c" d=""/>
+        </svg>
+        <h2 class="calm-title" id="calm-title">Organizar</h2>
+        <p class="calm-text">O ENTRELIA lê prazos, prioridades e dependências e encontra a ordem certa. Role e veja a bagunça virar uma fila.</p>
+      </div>
+    </section>
 
-  <noscript><p style="padding:24px">O ENTRELIA precisa de JavaScript ativado para funcionar.</p></noscript>
+    <!-- Na prática -->
+    <section class="practice section" id="na-pratica" aria-labelledby="practice-title">
+      <h2 class="display reveal" id="practice-title">Na<br>prática</h2>
+      <div class="practice-grid">
+        <figure class="mock reveal">
+          <div class="mock-screen">
+            <p class="m-eyebrow">Seu próximo passo</p>
+            <p class="m-title">Reservar hospedagem em Lisboa</p>
+            <p class="m-why">Vence amanhã e precisa ser concluída antes de outras duas.</p>
+            <div class="m-badges"><span class="m-badge is-warn">Vence amanhã</span><span class="m-badge is-danger">Alta</span><span class="m-badge">45 min</span></div>
+            <span class="m-btn">Concluir</span>
+          </div>
+          <figcaption><strong>Próximo passo</strong><span>A tarefa certa, com o motivo</span></figcaption>
+        </figure>
+        <figure class="mock reveal">
+          <div class="mock-screen">
+            <p class="m-eyebrow">Agenda de hoje</p>
+            <ul class="m-agenda">
+              <li><time>10:00</time><span>Reunião de alinhamento</span></li>
+              <li><time>12:30</time><span>Almoço com a Ana</span></li>
+              <li class="is-clash"><time>15:00</time><span>Aula de inglês</span><em>Conflito</em></li>
+              <li class="is-clash"><time>15:30</time><span>Ligação com a agência</span><em>Conflito</em></li>
+            </ul>
+          </div>
+          <figcaption><strong>Agenda</strong><span>Conflitos de horário avisados na hora</span></figcaption>
+        </figure>
+        <figure class="mock reveal">
+          <div class="mock-screen">
+            <p class="m-eyebrow">Custos de outubro</p>
+            <p class="m-money">R$ 6.214,70</p>
+            <div class="m-bars" aria-hidden="true">
+              <span style="--h:42%"></span><span style="--h:64%"></span><span style="--h:38%"></span><span style="--h:80%"></span><span style="--h:55%"></span><span class="is-now" style="--h:92%"></span>
+            </div>
+            <p class="m-foot">+ R$ 4.200,00 previstos</p>
+          </div>
+          <figcaption><strong>Custos</strong><span>Previsto e pago, mês a mês</span></figcaption>
+        </figure>
+      </div>
+    </section>
 
-  <script src="js/util.js"></script>
-  <script src="js/ui.js"></script>
-  <script src="js/db.js"></script>
-  <script src="js/logic.js"></script>
-  <script src="js/demo.js"></script>
-  <script src="js/components.js"></script>
-  <script src="js/views/overview.js"></script>
-  <script src="js/views/projects.js"></script>
-  <script src="js/views/tasks.js"></script>
-  <script src="js/views/calendar.js"></script>
-  <script src="js/views/lists.js"></script>
-  <script src="js/views/costs.js"></script>
-  <script src="js/views/compare.js"></script>
-  <script src="js/views/notes.js"></script>
-  <script src="js/views/settings.js"></script>
-  <script src="js/app.js"></script>
+    <!-- Números -->
+    <section class="numbers section" aria-label="Em números">
+      <div class="num-hero reveal">
+        <p class="num-giant"><span class="num-unit">R$</span>&nbsp;<span data-count="0">0</span></p>
+        <p class="num-side">Grátis, sem cadastro e sem anúncio. É abrir e começar.</p>
+      </div>
+      <div class="num-row">
+        <p class="num reveal"><span class="num-big" data-count="7">7</span><span class="num-label">ferramentas que conversam entre si</span></p>
+        <p class="num reveal"><span class="num-big"><span data-count="100">100</span>%</span><span class="num-label">dos dados no seu navegador</span></p>
+      </div>
+    </section>
+
+    <!-- O que vem junto -->
+    <section class="box section" aria-labelledby="box-title">
+      <div class="box-head">
+        <h2 class="display reveal" id="box-title">Vem junto</h2>
+        <p class="box-count">8 telas</p>
+      </div>
+      <ul class="box-list" id="box-list"></ul>
+    </section>
+
+    <!-- Detalhes -->
+    <section class="specs section" id="detalhes" aria-labelledby="specs-title">
+      <h2 class="display reveal" id="specs-title">Detalhes</h2>
+      <dl class="spec-list">
+        <div class="reveal"><dt>Funciona em</dt><dd>Chrome, Edge, Firefox e Safari, no computador e no celular</dd></div>
+        <div class="reveal"><dt>Instalação</dt><dd>Nenhuma. Abre direto no navegador</dd></div>
+        <div class="reveal"><dt>Seus dados</dt><dd>Salvos só neste navegador. Nada vai para um servidor</dd></div>
+        <div class="reveal"><dt>Backup</dt><dd>Exportar e importar em arquivo JSON</dd></div>
+        <div class="reveal"><dt>Atalhos</dt><dd>Ctrl/⌘ + K para buscar, N para nova tarefa, Esc para fechar</dd></div>
+        <div class="reveal"><dt>Temas</dt><dd>Escuro, claro ou o do sistema</dd></div>
+        <div class="reveal"><dt>Desfazer</dt><dd>Apagou sem querer? Dá para voltar atrás</dd></div>
+        <div class="reveal"><dt>Idioma</dt><dd>Português do Brasil, valores em R$</dd></div>
+      </dl>
+    </section>
+
+    <!-- Chamada final -->
+    <section class="cta" aria-labelledby="cta-title">
+      <h2 class="cta-title reveal" id="cta-title">Próximo passo<br>claro</h2>
+      <a class="btn btn-lg reveal" href="app.html">Abrir o ENTRELIA</a>
+      <p class="cta-note reveal">Comece com dados de demonstração ou do zero.</p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span class="wordmark">ENTRELIA</span>
+    <span>Tudo conectado. Próximo passo claro.</span>
+    <a href="app.html">Abrir o app</a>
+  </footer>
+
+  <script src="js/landing.js"></script>
 </body>
 </html>

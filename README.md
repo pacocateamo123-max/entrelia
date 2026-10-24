@@ -8,7 +8,7 @@ Central de organização pessoal e de projetos: visão geral com “Seu próximo
 
 Não precisa instalar nada. Escolha uma das opções:
 
-- Abra o `index.html` direto no navegador (Chrome, Edge, Firefox ou Safari).
+- Abra o `index.html` (página de apresentação) ou o `app.html` (o app) direto no navegador (Chrome, Edge, Firefox ou Safari).
 - Ou rode um servidor local nesta pasta e acesse `http://127.0.0.1:5173`:
 
 ```bash
@@ -19,8 +19,9 @@ No primeiro acesso, escolha entre explorar os **dados de demonstração** ou **c
 
 ## Estrutura
 
-- `index.html`: página única
-- `css/styles.css`: tema escuro e claro, layout responsivo e animações
+- `index.html`, `css/landing.css`, `js/landing.js`: página de apresentação, com rolagem guiada e animações
+- `app.html`: o app (página única)
+- `css/styles.css`: tema escuro e claro do app, layout responsivo e animações
 - `js/util.js`: datas, moeda (R$) e textos em pt-BR
 - `js/ui.js`: ícones, logotipo, modais, avisos, menus e atualização do DOM
 - `js/db.js`: persistência (IndexedDB, com localStorage como alternativa), desfazer e backup

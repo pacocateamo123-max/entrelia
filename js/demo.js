@@ -3,7 +3,7 @@
 /* ---------- Modelos iniciais de projeto (editáveis antes de criar) ---------- */
 const TEMPLATES = [
   {
-    id: 'estudos', name: 'Planejamento de estudos', icon: 'book', color: '#A78BFA', days: 45, budget: 300,
+    id: 'estudos', name: 'Planejamento de estudos', icon: 'book', color: '#D6A062', days: 45, budget: 300,
     description: 'Organize conteúdos, revisões e simulados até a data da prova.',
     tasks: [
       { title: 'Definir objetivo e data da prova', priority: 'alta', offset: 1, duration: 30 },
@@ -115,7 +115,7 @@ function buildDemo() {
   const o = () => (ord += 1000);
 
   const P1 = M.project({ ...D, name: 'Viagem para Lisboa', color: '#5EEAD4', start: d(-12), due: d(38), budget: 12000, description: 'Dez dias em Lisboa e Sintra. Passagens compradas; falta fechar hospedagem, seguro e roteiro.' });
-  const P2 = M.project({ ...D, name: 'Certificação em nuvem', color: '#A78BFA', start: d(-20), due: d(24), budget: 1200, description: 'Plano de estudos para a certificação de fundamentos em computação em nuvem.' });
+  const P2 = M.project({ ...D, name: 'Certificação em nuvem', color: '#D6A062', start: d(-20), due: d(24), budget: 1200, description: 'Plano de estudos para a certificação de fundamentos em computação em nuvem.' });
   const P3 = M.project({ ...D, name: 'Site do portfólio', color: '#FBBF24', start: d(-15), due: d(30), budget: 600, description: 'Portfólio pessoal com projetos, contato e currículo.' });
   const P4 = M.project({ ...D, name: 'Aniversário da Júlia', color: '#FDA4AF', start: d(-2), due: d(20), budget: 1500, description: 'Festa surpresa para cerca de 30 pessoas.' });
 
