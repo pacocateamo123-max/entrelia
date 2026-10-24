@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ENTRELIA — Tudo conectado. Próximo passo claro.</title>
+  <meta name="description" content="ENTRELIA: central inteligente de organização pessoal e de projetos. Tarefas, calendário, listas, custos, comparador e notas conectados.">
+  <meta name="theme-color" content="#090D16">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script>
+    // Aplica o tema salvo antes da primeira pintura (evita piscar).
+    (function () {
+      var pref = 'escuro';
+      try { pref = localStorage.getItem('entrelia-theme') || 'escuro'; } catch (e) {}
+      var dark = pref === 'sistema' ? !window.matchMedia('(prefers-color-scheme: light)').matches : pref !== 'claro';
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Pular para o conteúdo</a>
+
+  <div class="app" id="app">
+    <aside class="sidebar" id="sidebar" aria-label="Menu principal"></aside>
+    <div class="main-col">
+      <header class="topbar" id="topbar"></header>
+      <main id="main" tabindex="-1">
+        <div class="boot" role="status">
+          <div class="boot-dot"></div>
+          <span>Carregando seus dados…</span>
+        </div>
+      </main>
+    </div>
+    <nav class="bottom-nav" id="bottom-nav" aria-label="Navegação principal"></nav>
+  </div>
+
+  <div id="modal-root"></div>
+  <div id="toast-root" class="toasts" aria-live="polite"></div>
+
+  <noscript><p style="padding:24px">O ENTRELIA precisa de JavaScript ativado para funcionar.</p></noscript>
+
+  <script src="js/util.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/logic.js"></script>
+  <script src="js/demo.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/views/overview.js"></script>
+  <script src="js/views/projects.js"></script>
+  <script src="js/views/tasks.js"></script>
+  <script src="js/views/calendar.js"></script>
+  <script src="js/views/lists.js"></script>
+  <script src="js/views/costs.js"></script>
+  <script src="js/views/compare.js"></script>
+  <script src="js/views/notes.js"></script>
+  <script src="js/views/settings.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
