@@ -4,14 +4,14 @@
      com a cópia guardada como reserva quando estiver offline.
    - Fontes do Google: cópia guardada primeiro (não mudam).
    ========================================================= */
-const CACHE = 'entrelia-v1';
+const CACHE = 'entrelia-v2';
 const SHELL = [
   './', 'index.html', 'app.html', 'manifest.webmanifest',
   'css/styles.css', 'css/landing.css',
   'js/util.js', 'js/ui.js', 'js/db.js', 'js/logic.js', 'js/demo.js', 'js/components.js', 'js/app.js', 'js/landing.js',
   'js/views/overview.js', 'js/views/projects.js', 'js/views/tasks.js', 'js/views/calendar.js', 'js/views/lists.js',
   'js/views/costs.js', 'js/views/compare.js', 'js/views/notes.js', 'js/views/settings.js',
-  'assets/logo.svg', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png',
+  'assets/logo.svg', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/apple-touch-icon.png',
 ];
 
 self.addEventListener('install', (e) => {
